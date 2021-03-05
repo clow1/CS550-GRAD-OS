@@ -1,2 +1,4 @@
 # CS550
-Completed assignments 
+## Crystal Low, Hannah Burkhard
+Assignments for Graduate Operating Systems Spring '21
+
