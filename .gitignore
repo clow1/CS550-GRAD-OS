@@ -1,0 +1,5 @@
+#Ignore .cmd
+*.cmd
+
+#Ignore .mk
+*.mk 
