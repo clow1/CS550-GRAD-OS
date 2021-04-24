@@ -1,1 +1,0 @@
-cmd_/home/clow1/assignment2/module/hello.ko := ld -r -m elf_x86_64 -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o /home/clow1/assignment2/module/hello.ko /home/clow1/assignment2/module/hello.o /home/clow1/assignment2/module/hello.mod.o ;  true
