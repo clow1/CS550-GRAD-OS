@@ -58,15 +58,16 @@ static int pl_close(struct inode *inodep, struct file *filp) {
 //PID=1 PPID=0 CPU=4 STATE=TASK_RUNNING
 
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off) {
-	int error_count = 0;
+    int error_count = 0;
     int buffer_size = 0;
     struct task_struct* p;
-
     for_each_process(p) {
-    	sprintf(buffer, "PID=%d", p->pid);
-    }
+	struct task_struct* proc_parent = p->parent;
+    	sprintf(buffer, "PID=%d PPID=%d CPU=%d STATE=%lx ", p->pid, proc_parent->pid, p->state);
 
-    sprintf(buffer, "Hello World");
+   }
+
+//    sprintf(buffer, "Hello World");
     
     buffer_size = strlen(buffer)+1;
     error_count = copy_to_user(out, &buffer, buffer_size);
