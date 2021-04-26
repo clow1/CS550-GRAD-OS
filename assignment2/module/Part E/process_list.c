@@ -63,7 +63,8 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
     struct task_struct* p;
     for_each_process(p) {
 	struct task_struct* proc_parent = p->parent;
-    	sprintf(buffer, "PID=%d PPID=%d CPU=%d STATE=%lx ", p->pid, proc_parent->pid, p->state);
+    	sprintf(buffer, "PID=%d PPID=%d CPU=%d STATE=%lx ", p->pid, proc_parent->pid,
+		get_task_state( p->state));
 
    }
 
