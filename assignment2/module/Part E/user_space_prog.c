@@ -21,7 +21,7 @@ int main() {
 	int bytes_read;
 	while(bytes_read = read(fd, buffer, strlen(buffer)) > 0) {
 		printf("%s\n", buffer);
-		memset(buffer, 0, sizeof(char)* BUFFER_LENGTH)
+		memset(buffer, 0, sizeof(char)* BUFFER_LENGTH);
 	}
 
 	if(bytes_read < 0) {
