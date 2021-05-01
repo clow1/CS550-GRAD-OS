@@ -12,6 +12,7 @@
 static int pl_open(struct inode *inode, struct file *file);
 static int pl_close(struct inode *inodep, struct file *filp);
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off);
+char* process_state(long state); 
 
 
 static struct file_operations pl_fops = {
