@@ -65,16 +65,17 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
 
     char buffer[BUFFER_LENGTH];
     struct task_struct* p;
+    struct task_struct* p_parent;
 
     memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
 
     for_each_process(p) {
 
     	// Get parrent PID
-    	
+    	p_parent = p->parent;
     	// Get process state
-    	state = process_state(task->state);
-    	sprintf(buffer + strlen(buffer), "\nPID=%d", p->pid);
+    	state = process_state(p->state);
+    	sprintf(buffer + strlen(buffer), "\nPID=%d  PPID=%d STATE=%lx", p->pid, p_parent->pid,state );
 
     }
 
