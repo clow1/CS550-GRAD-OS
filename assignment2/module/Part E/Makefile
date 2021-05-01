@@ -1,16 +1,16 @@
-# Simple Makefile to build a simple misc driver
-# Nick Glynn <Nick.Glynn@feabhas.com>
-#
+obj-m := process_list.o
 
-obj-m += process_list.o
+KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
-KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
-all:
-	make -C $(KDIR) M=$(PWD) modules
-	$(CC) user_space_prog.c -o user_space_prog
-        
+modules:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+modules_install:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
+
 clean:
-	make -C $(KDIR) M=$(PWD) clean
-	rm user_space_prog
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+
+.PHONY: modules modules_install clean

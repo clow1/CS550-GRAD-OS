@@ -18,19 +18,17 @@ int main() {
 		return errno;
 	}
 
-	//while(!some termination condition)
-	//{
-		int bytes_read;
-		bytes_read = read(fd, buffer, BUFFER_LENGTH);
-		if(bytes_read < 0) {
+	int bytes_read;
+	while(bytes_read = read(fd, buffer, strlen(buffer)) > 0) {
+		printf("%s\n", buffer);
+		memset(buffer, 0, sizeof(char)* BUFFER_LENGTH)
+	}
+
+	if(bytes_read < 0) {
 			perror("FAILURE: Failed to Read from Process List Device");
 			return errno;
-		}
+	}
 
-		printf("%s", buffer);
-
-		
-	//}
 	close(fd);
 	return 0; 
 }
