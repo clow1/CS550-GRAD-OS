@@ -60,6 +60,7 @@ static int pl_close(struct inode *inodep, struct file *filp) {
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off) {
 	int error_count = 0;
     int buffer_size = 0;
+    char* state = NULL;
 
     char buffer[BUFFER_LENGTH];
     struct task_struct* p;
@@ -67,7 +68,11 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
     memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
 
     for_each_process(p) {
-    	char* state = process_state(task->state);
+
+    	// Get parrent PID
+    	
+    	// Get process state
+    	state = process_state(task->state);
     	sprintf(buffer + strlen(buffer), "\nPID=%d", p->pid);
 
     }
