@@ -14,6 +14,7 @@ static int pl_close(struct inode *inodep, struct file *filp);
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off);
 char* process_state(long state); 
 
+static struct task_struct* p;
 
 static struct file_operations pl_fops = {
 	.owner 		= THIS_MODULE,
@@ -37,7 +38,7 @@ static int __init pl_init(void) {
 		pr_err("FAILED: Register Process List Module Unsuccessful");
 		return error;
 	}
-
+	p = next_task(&init_task);
 	pr_info("SUCCESS: Process List Module Registered");
 	return 0;
 }
@@ -49,42 +50,47 @@ static void __exit pl_exit(void) {
 
 static int pl_open(struct inode *inode, struct file *file) {
 	pr_info("Process List Module Opened\n");
+	p = next_task(&init_task);
 	return 0;
 }
 
 static int pl_close(struct inode *inodep, struct file *filp) {
 	pr_info("Process List Module Closed\n");
+	p = &init_task;
 	return 0;
 }
 
 //PID=1 PPID=0 CPU=4 STATE=TASK_RUNNING
 
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off) {
-	int error_count = 0;
-    int buffer_size = 0;
-    char* state = NULL;
+	int error_count;
+    //char* state = NULL;
 
     char buffer[BUFFER_LENGTH];
-    struct task_struct* p;
-    struct task_struct* p_parent;
+    struct task_struct* p2;
+    //struct task_struct* p_parent;
 
-    memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
-    buffer_size = strlen(buffer)+1;
+    int buffer_size = strlen(buffer);
 
     for_each_process(p) {
+    	if(p == p2){
+    		// Get parrent PID
+	    	//p_parent = p->parent;
+	    	// Get process state
+	    	//state = process_state(p->state);
+    		memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
+	    	sprintf(buffer, "PID=%d", p->pid);
+	    	error_count = raw_copy_to_user(out, buffer, buffer_size);
+	    	if (error_count != 0) {
+	    		pr_err("FAILED: Failed to write data to end user");
+	    		return errno;
+	    	}
 
-    	// Get parrent PID
-    	p_parent = p->parent;
-    	// Get process state
-    	state = process_state(p->state);
-    	sprintf(buffer, "\nPID=%d  PPID=%d STATE=%lx", p->pid, p_parent->pid,state );
-
-    	
+	    	p = next_task(p2);
+	    	break;
+    	}
 
     }
-
-   error_count = copy_to_user(out, &buffer, buffer_size);
-    
     return buffer_size; 
 }
 
