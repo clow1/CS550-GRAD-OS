@@ -4,6 +4,7 @@
 #include <linux/module.h>
 #include <linux/uaccess.h>
 #include <linux/sched/signal.h>
+#include <linux/sched.h>
 
 #define BUFFER_LENGTH 1000
 
@@ -108,9 +109,9 @@ char* process_state(long state) {
 		case EXIT_ZOMBIE:
 	    	rv = "EXIT_ZOMBIE";
 	    	break;
-	    case EXIT_TRACE:
-	    	rv = "EXIT_ZOMBIE, EXIT_DEAD";
-	    	break;
+	    //case EXIT_TRACE:
+	    	//rv = "EXIT_ZOMBIE, EXIT_DEAD";
+	    	//break;
 		case TASK_PARKED:
 	    	rv = "TASK_PARKED";
 	    	break;
@@ -132,7 +133,7 @@ char* process_state(long state) {
 		case TASK_STATE_MAX:
 	    	rv = "TASK_STATE_MAX";
 	    	break;
-	    case TASK_KILLABLE:
+	    /*case TASK_KILLABLE:
 	    	rv = "TASK_WAKEKILL, TASK_UNINTERRUPTIBLE";
 	    	break;
 	    case TASK_STOPPED:
@@ -149,7 +150,7 @@ char* process_state(long state) {
 			break;
 		case TASK_REPORT:
 			rv = "TASK_RUNNING , TASK_INTERRUPTIBLE , TASK_UNINTERRUPTIBLE , __TASK_STOPPED , __TASK_TRACED , EXIT_ZOMBIE , EXIT_DEAD";
-			break;
+			break;*/
 		default:
 	    	return "INVALID";
 	}
