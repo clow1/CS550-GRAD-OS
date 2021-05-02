@@ -10,8 +10,8 @@
 
 // Declare fop operations
 static int pl_open(struct inode *inode, struct file *file);
-static int pl_close(struct inode *inodep, struct file *filp);
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off);
+static int pl_close(struct inode *inodep, struct file *filp);
 char* process_state(long state); 
 
 static struct task_struct* p;
@@ -19,8 +19,8 @@ static struct task_struct* p;
 static struct file_operations pl_fops = {
 	.owner 		= THIS_MODULE,
 	.open 		= pl_open,
-	.release 	= pl_close,
 	.read 		= pl_read,
+	.release 	= pl_close
 };
 
 static struct miscdevice pl_device = {
@@ -50,12 +50,6 @@ static void __exit pl_exit(void) {
 static int pl_open(struct inode *inode, struct file *file) {
 	pr_info("Process List Module Opened\n");
 	p = next_task(&init_task);
-	return 0;
-}
-
-static int pl_close(struct inode *inodep, struct file *filp) {
-	pr_info("Process List Module Closed\n");
-	p = &init_task;
 	return 0;
 }
 
@@ -91,6 +85,12 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
 
     }
     return buffer_size; 
+}
+
+static int pl_close(struct inode *inodep, struct file *filp) {
+	pr_info("Process List Module Closed\n");
+	p = &init_task;
+	return 0;
 }
 
 char* process_state(long state) {
