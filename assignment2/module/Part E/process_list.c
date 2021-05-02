@@ -63,7 +63,7 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
     struct task_struct* p2;
     //struct task_struct* p_parent;
 
-    int buffer_size = strlen(buffer);
+    int buffer_size = strlen(buffer)+1;
 
     for_each_process(p) {
     	if(p == p2){
@@ -73,11 +73,11 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
 	    	//state = process_state(p->state);
     		memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
 	    	sprintf(buffer, "PID=%d", p->pid);
-	    	error_count = raw_copy_to_user(out, buffer, buffer_size);
-	    	if (error_count != 0) {
+	    	error_count = copy_to_user(out, buffer, buffer_size);
+	    	/*if (error_count != 0) {
 	    		pr_err("FAILED: Failed to write data to end user");
 	    		return errno;
-	    	}
+	    	}*/
 
 	    	p = next_task(p2);
 	    	break;

@@ -4,16 +4,12 @@ KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
 PWD := $(shell pwd)
 
-modules:
+all:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
-
-modules_install:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
-
-user_space:
-	gcc -g -Wall -o user_space_prog user_space_prog.c
+	$(CC) user_space_prog.c -o user_space_prog
 
 clean:
 	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+	rm user_space_prog
 
 .PHONY: modules modules_install clean
