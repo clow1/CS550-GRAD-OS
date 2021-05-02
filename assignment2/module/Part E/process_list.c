@@ -21,7 +21,6 @@ static struct file_operations pl_fops = {
 	.open 		= pl_open,
 	.release 	= pl_close,
 	.read 		= pl_read,
-	.llseek 	= no_llseek
 };
 
 static struct miscdevice pl_device = {
