@@ -15,6 +15,9 @@ static int pl_close(struct inode *inodep, struct file *filp);
 static ssize_t pl_read(struct file *file, char *out, size_t size, loff_t* off);
 static char* process_state(long state);
 
+
+static struct task_struct* proc;
+
 static struct file_operations pl_fops = {
 	.owner 		= THIS_MODULE,
 	.open 		= pl_open,
@@ -29,8 +32,6 @@ static struct miscdevice pl_device = {
 	.fops = &pl_fops
 };
 
-static struct task_struct* proc;
-
 static int __init pl_init(void) {
 	int error;
 	error = misc_register(&pl_device);
@@ -41,7 +42,7 @@ static int __init pl_init(void) {
 	}
 
 	pr_info("SUCCESS: Process List Module Registered");
-	proc = next_task(&init_task);
+	proc = next_task(&init_task); //we set process proc to point to the process after the first process.
 	
 	return 0;
 }
@@ -72,39 +73,25 @@ static ssize_t pl_read(struct file *file, char *out, size_t size, loff_t* off) {
 
     char buffer[BUFFER_LENGTH];
     struct task_struct* p;
-    struct task_struct* p_parent;
 
     //memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
-
     for_each_process(p) {
 
-    	if (proc == p) {  //check to see if it's the right process aka matching
+    	if (proc == p) {	//for verification starting from the first task, the init_task. In other words, we KNOW that proc at FIRST references to 
+				// the task that is after that of &init_task, and then consequently, we may traverse along each process p more properly.
 		char* p_state =process_state(p->state);
 		memset(buffer, 0, sizeof(char) * BUFFER_LENGTH);
 		sprintf(buffer, "PID=%d  PPID=%d CPU = %d STATE = %s\n", p->pid, p->parent->pid, task_cpu(p),p_state);
 		error_count = copy_to_user(out, buffer, strlen(buffer)+1);
 		if (error_count != 0) {
 			printk(KERN_ALERT "Cannot copy data to user program");
-			return EFAULT;
+			return EFAULT; //copy_to_user error, probably an invalid reference
 		}
-		proc=next_task(p);
+		proc=next_task(p); //proc is now being defined as the next process relative to p
 		break;
 	}
   }
   return strlen(buffer);	
-//    	p_parent = p->parent;
-    	// Get process state
-    	//p_state = process_state(p->state);
-  //     	sprintf(buffer, "PID=%d PPID=%d state=%lx", p->pid,p_parent->pid,p->state);
- //       error_count = copy_to_user(out, &buffer, buffer_size);
-//  	buffer_size=strlen(buffer)+1; 
-  // }
-
-   
-    
-  //  buffer_size = strlen(buffer)+1;
-   // error_count = copy_to_user(out, &buffer, buffer_size);
-//    return buffer_size; 
 }
 
 char* process_state(long state) {
