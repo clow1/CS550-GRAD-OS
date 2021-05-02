@@ -12,4 +12,4 @@ clean:
 	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
 	rm user_space_prog
 
-.PHONY: modules modules_install clean
+.PHONY: modules clean
