@@ -27,7 +27,7 @@ To Remove the kernel module execute: <code> sudo rmmod process_list </code>
 To Remove all executables execute: <code> make clean </code>
 
 <h4> Kernel Module </h4>
-Once the kernel module, process_list, has been inserted into the kernel space the read() operation can be performed to return the following information reguarding all running process:
+By following similar steps to that of A-D, we were able to create a misc. character device like so. Once the kernel module, process_list, has been inserted into the kernel space the read() operation can be performed to return the following information reguarding all running process:
 
 - process ID
 
