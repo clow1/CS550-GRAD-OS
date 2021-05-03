@@ -17,9 +17,13 @@ This zip file includes proceess_list.c (a kernel module which creates a process_
 <h4> How to run </h4>
 
 To Compile the program execute: <code> make </code>
+
 To Insert the kernel module execute: <code> sudo insmod process_list.ko </code>
+
 To Run the user space program execute: <code> sudo ./user_space_program </code>
+
 To Remove the kernel module execute: <code> sudo rmmod process_list </code>
+
 To Remove all executables execute: <code> make clean </code>
 
 <h4> Kernel Module </h4>
