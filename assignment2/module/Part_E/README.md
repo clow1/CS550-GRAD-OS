@@ -28,10 +28,15 @@ To Remove all executables execute: <code> make clean </code>
 
 <h4> Kernel Module </h4>
 Once the kernel module, process_list, has been inserted into the kernel space the read() operation can be performed to return the following information reguarding all running process:
+
 - process ID
+
 - parrent process ID
+
 - the CPU the process is running on
+
 - the current state
 
 The user program invokes the read() operation, described above, and outputs the retrieved data to standard out. The program's output is printed in the following format:
+
 PID=[Process_ID] PPID=[Parrent_PID] CPU=[CPU_Running] STATE=[Current_State]
