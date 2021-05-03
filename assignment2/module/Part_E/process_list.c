@@ -18,6 +18,7 @@ char* process_state(long state);
 
 static struct task_struct* p;
 
+// Declare file operation struct
 static struct file_operations pl_fops = {
 	.owner 		= THIS_MODULE,
 	.open 		= pl_open,
@@ -25,12 +26,14 @@ static struct file_operations pl_fops = {
 	.release 	= pl_close
 };
 
+// Declare device struct
 static struct miscdevice pl_device = {
 	.minor = MISC_DYNAMIC_MINOR,
 	.name = "process_list",
 	.fops = &pl_fops
 };
 
+// Function to register the device module within the kernel
 static int __init pl_init(void) {
 	int error;
 	error = misc_register(&pl_device);
@@ -40,22 +43,29 @@ static int __init pl_init(void) {
 		return error;
 	}
 	pr_info("SUCCESS: Process List Module Registered");
+
+	// Set the next task to be processed to the inital task when the device is registered
 	p = next_task(&init_task);
 	return 0;
 }
 
+// Function to unregister the device module within the kernel
 static void __exit pl_exit(void) {
 	misc_deregister(&pl_device);
 	pr_info("Process List Module Unregistered");
 }
 
+// Function that handles the open operation within the device module
 static int pl_open(struct inode *inode, struct file *file) {
 	pr_info("Process List Module Opened\n");
+	// Set the next task to be processed to the inital task when the device module is opened
 	p = next_task(&init_task);
 	return 0;
 }
 
+// Function that handles the read operation within the device module
 static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t* off) {
+	// Declare variables
 	int rc;
 	int error_count;
 	int buffer_size = 0;
@@ -63,17 +73,26 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
 
     char buffer[BUFFER_LENGTH];
 
+    // Process the current task state
 	p_state = process_state(p->state);
 
+	// Initialize buffer to empty prior to storing the task data
 	memset(buffer,0,sizeof(char)*BUFFER_LENGTH);
-	//PID=1 PPID=0 CPU=4 STATE=TASK_RUNNING
+	// Store task data within the buffer
 	sprintf(buffer, "PID=%d PPID=%d CPU=%d STATE=%s", p->pid, p->parent->pid, task_cpu(p), p_state);
-	//printk(KERN_INFO"\nPID=%d", p->pid);
-	buffer_size = strlen(buffer)+1;
 
+	// Copy task data from kernel space to user space
+	buffer_size = strlen(buffer)+1;
 	error_count = copy_to_user(out, buffer, buffer_size);
+	if (error_count != 0) {
+		pr_err("FAILED: Failed to Copy Kernel Data to User Space.");
+		return -EFAULT;
+	}
+
+	// Set p to next task to be processed
 	p = next_task(p);
 
+	// Since the task struct is a circular linked list, we must check if the next process is the inital process to prevent infinate looping
 	if(p == &init_task) {
 		rc = 0;
 	} else {
@@ -83,12 +102,15 @@ static ssize_t pl_read(struct file *file, char __user *out, size_t size, loff_t*
     return rc; 
 }
 
+// Function that handles the close operation within the device module
 static int pl_close(struct inode *inodep, struct file *filp) {
 	pr_info("Process List Module Closed\n");
+	// Set p to the inital task
 	p = &init_task;
 	return 0;
 }
 
+// Function to process the task state
 char* process_state(long state) {
 	char* rc = "INVALID";
 	switch(state) {
